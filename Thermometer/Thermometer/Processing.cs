@@ -24,5 +24,45 @@ namespace Thermometer
                 }
             }
         }
+        public static IEnumerable<Trend> generate_trends(this IEnumerable<decimal> source)
+        {
+            decimal? previous;
+            decimal? current=null;
+            Trend? previousTrend = null;
+            foreach (var item in source)
+            {
+                previous = current;
+                current = item;
+                if (previous.HasValue && current.HasValue)
+                {
+                    if (current > previous)
+                    {
+                        previousTrend = Trend.Up;
+                        yield return Trend.Up;
+                    }
+                    else if(current < previous)
+                    {
+                        previousTrend = Trend.Down;
+                        yield return Trend.Down;
+                    }else
+                    {
+                        yield return previousTrend.Value;
+                    }
+                }
+                else
+                {
+                    previousTrend = Trend.None;
+                    yield return Trend.None;
+                }
+            }
+        }
+
+    }
+
+    public enum Trend
+    {
+        None,
+        Up,
+        Down
     }
 }
